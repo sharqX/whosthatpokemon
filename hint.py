@@ -1,7 +1,8 @@
+import re
 import requests
 from get_name import url
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama import OllamaLLM
+from langchain_core.prompts import ChatPromptTemplate
 
 def get_id():
     response = requests.get(url())
@@ -27,9 +28,8 @@ def hint():
 
 def gen_hint():
     poke_hint = hint()
-    print(poke_hint)
     template = """
-    Change the hint below and generate a new hint if it contains a Pokemon name else just pass the original hint to "New hint:".
+    Change the hint below and generate a new hint if it contains a Pokémon name else just pass the original hint to "New hint:".
 
     Instruction: {instruction} 
     Here is the hint: {hint}
@@ -37,17 +37,25 @@ def gen_hint():
     New hint: 
     """
 
-    model = OllamaLLM(model="llama3")
+    model = OllamaLLM(model="llama3") # Gotta cache responds mannn !!! AI toooooooo SLOW 
     promt = ChatPromptTemplate.from_template(template)
     chain = promt | model
 
     ai_generated_hint = chain.invoke({
     "instruction":
-    "Write the hint in 3rd person if it contains a pokemon do not use pronous such as he/she",
+    "Write the hint in 3rd person if it contains a pokemon DO NOT use pronous such as he/she",
     "hint":
     {poke_hint}
     })
-    print(ai_generated_hint)
 
+    match = re.search(r"New hint:\s*((?:.|\n)*?)(?:\n\s*\n|$)", ai_generated_hint)
+    if match:
+        hint_block = match.group(1)
+
+        cleaned = re.sub(r'[\"“”\'`{}]', '', hint_block)
+
+        return cleaned.strip()
+    else:
+        return "No hint found :("
 
 gen_hint()
