@@ -2,9 +2,11 @@ import requests
 import uvicorn
 from fastapi import FastAPI
 from get_name import url
+from hint import gen_hint
 
 app = FastAPI()
 poke_url = url()
+poke_hint = gen_hint()
 
 def main():
     print("Hello from pokemon!")
@@ -13,8 +15,10 @@ def main():
 @app.get(path="/")
 async def root():
     response = requests.get(poke_url)
+    if response.status_code != 200:
+        return "API Error"
+    
     pokemon =  response.json()
-
     data = []
 
     if pokemon:
@@ -27,7 +31,8 @@ async def root():
         "type" : type,
         "height" : height,
         "weight" : weight,
-        "id" : id
+        "id" : id,
+        "hint" : poke_hint 
     })
 
     return data
