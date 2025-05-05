@@ -8,11 +8,13 @@ def get_id():
     response = requests.get(url())
     pokemon =  response.json()
 
-    if pokemon:
+    if pokemon and "id" in pokemon:
         id = pokemon["id"]
+        assert 1 <= id <= 1025, "Error: id is out of valid range!"
         return id
     else:
-        assert id != range(1,1025), "Error getting id!"
+        raise ValueError("Error getting id: pokemon data is invalid or missing")
+
 
 def hint():
     id = get_id()
@@ -57,5 +59,3 @@ def gen_hint():
         return cleaned.strip()
     else:
         return "No hint found :("
-
-gen_hint()

@@ -1,8 +1,8 @@
 import requests
 import uvicorn
-from fastapi import FastAPI
 from get_name import url
 from hint import gen_hint
+from fastapi import FastAPI
 
 app = FastAPI()
 poke_url = url()
@@ -28,20 +28,14 @@ async def root():
         id = pokemon["id"]
     
     data.append({
-        "type" : type,
-        "height" : height,
-        "weight" : weight,
+        "Type" : type,
+        "Height" : height,
+        "Weight" : weight,
+        "Hint" : poke_hint,
         "id" : id,
-        "hint" : poke_hint 
     })
 
     return data
             
 if __name__ == "__main__":
     main()
-
-
-# type
-# height & weight
-# ability
-# id for poekedex flavor
