@@ -39,7 +39,7 @@ def gen_hint():
     New hint: 
     """
 
-    model = OllamaLLM(model="llama3") # Gotta cache responds mannn !!! AI toooooooo SLOW 
+    model = OllamaLLM(model="llama3") 
     promt = ChatPromptTemplate.from_template(template)
     chain = promt | model
 
