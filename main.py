@@ -3,10 +3,16 @@ import uvicorn
 from get_name import url
 from hint import gen_hint
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-poke_url = url()
-poke_hint = gen_hint()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def main():
     print("Hello from pokemon!")
@@ -14,6 +20,8 @@ def main():
 
 @app.get(path="/")
 async def root():
+    poke_url = url()
+    poke_hint = gen_hint()
     response = requests.get(poke_url)
     if response.status_code != 200:
         return "API Error"
@@ -31,7 +39,7 @@ async def root():
         "Type" : type,
         "Height" : height,
         "Weight" : weight,
-        "Hint" : poke_hint,
+        "Hint" : poke_hint.lower(),
         "id" : id,
     })
 
