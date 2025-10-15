@@ -16,12 +16,15 @@ app.add_middleware(
 
 def main():
     print("Hello from pokemon!")
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    try:
+        requests.get("http://localhost:11434").status_code == 200
+        uvicorn.run(app, host="127.0.0.1", port=8000)
+    except Exception as e:
+        print(f"Ollama service is not running: {e}")
 
 @app.get(path="/")
 async def root():
     poke_url = url()
-    poke_hint = gen_hint()
     response = requests.get(poke_url)
     if response.status_code != 200:
         return "API Error"
@@ -39,11 +42,15 @@ async def root():
         "Type" : type,
         "Height" : height,
         "Weight" : weight,
-        "Hint" : poke_hint.lower(),
         "id" : id,
     })
 
     return data
+
+@app.get(path="/hint")
+async def get_hint():
+    poke_hint = gen_hint()
+    return {"Hint": poke_hint.lower()}
             
 if __name__ == "__main__":
     main()
