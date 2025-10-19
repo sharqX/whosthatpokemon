@@ -14,6 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 def main():
     print("Hello from pokemon!")
     try:
@@ -22,14 +23,15 @@ def main():
     except Exception as e:
         print(f"Ollama service is not running: {e}")
 
+
 @app.get(path="/")
 async def root():
     poke_url = url()
     response = requests.get(poke_url)
     if response.status_code != 200:
         return "API Error"
-    
-    pokemon =  response.json()
+
+    pokemon = response.json()
     data = []
 
     if pokemon:
@@ -37,20 +39,26 @@ async def root():
         height = pokemon["height"]
         weight = pokemon["weight"]
         id = pokemon["id"]
-    
-    data.append({
-        "Type" : type,
-        "Height" : height,
-        "Weight" : weight,
-        "id" : id,
-    })
+        name = pokemon["forms"][0]["name"]
+
+    data.append(
+        {
+            "Type": type,
+            "Height": height,
+            "Weight": weight,
+            "id": id,
+            "name": name,
+        }
+    )
 
     return data
+
 
 @app.get(path="/hint")
 async def get_hint():
     poke_hint = gen_hint()
     return {"Hint": poke_hint.lower()}
-            
+
+
 if __name__ == "__main__":
     main()
